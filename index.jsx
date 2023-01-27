@@ -9,11 +9,11 @@ const app = express()
 app.use(cors());
 app.use(express.json());
 
-let categorios = [
-  // {
-  //   id: uuid(),
-  //   name: "Hen bilee"
-  // },
+let categories = [
+  {
+    id: uuid(),
+    name: "Hen bilee"
+  },
   {
     id: uuid(),
     name: "Henee"
@@ -21,10 +21,10 @@ let categorios = [
   {
     id: uuid(),
     name: "Horloo"
-  },
+  }
 ];
 
-app.get("categories", (require, response) =>{
+app.get("/categories", (require, response) => {
   response.json(categories);
 })
 
@@ -41,34 +41,34 @@ app.get("/categories/:id", (require, response) =>{
 
 app.post("/categories", (require, response)=>{
   const { name } = require.body;
-  const newCategory = { id: uuid(), nema: name};
-  categorios.push(newCategory);
+  const newCategory = { id: uuid(), name: name};
+  categories.push(newCategory);
   response.sendStatus(201);
 })
 
-// app.delete("categories/:id", (require, response)=>{
-//   const { id } = require.params;
-//   const one = categorios.find((category) => category.id === id);
-//   if(one){
-//     const newList = categorios.filter((category) => category.id !== id );
-//     categorios = newList; 
-//     response.json({deleteId: id});
-//   } else{ 
-//     response.sendStatus(404)
-//   }
-// });
+app.delete("/categories/:id", (require, response)=>{
+  const { id } = require.params;
+  const one = categories.find((category) => category.id === id);
+  if(one){
+    const newList = categories.filter((category) => category.id !== id );
+    categories = newList; 
+    response.json({deleteId: id});
+  } else{ 
+    response.sendStatus(404)
+  }
+});
 
-// app.put("/categories/:id", (require, response) => {
-//   const { id } = require.params;
-//   const { name } = require.body;
-//   const index = categorios.findIndex((category) => category.id === id);
-//   id (index > -1){
-//     categories[index].name = name;
-//     response.json({updatedId: id});
-//   } else{
-//     response.sendStatus(404);
-//   }
-// })
+app.put("/categories/:id", (require, response) => {
+  const { id } = require.params;
+  const { name } = require.body;
+  const index = categories.findIndex((category) => category.id === id);
+  if (index > -1) {
+    categories[index].name = name
+    response.json({updatedId: id})
+  } else {
+    response.sendStatus(404);
+  }
+})
 
 
 // (require, response)
