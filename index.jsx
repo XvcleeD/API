@@ -10,18 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 let categories = [
-  {
-    id: uuid(),
-    name: "Hen bilee"
-  },
-  {
-    id: uuid(),
-    name: "Henee"
-  },
-  {
-    id: uuid(),
-    name: "Horloo"
-  }
+
 ];
 
 app.get("/categories", (require, response) => {
