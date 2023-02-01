@@ -20,6 +20,8 @@ app.get("/categories", (require, response) => {
   response.json(categories);
 });
 
+
+
 app.get("/categories/:id", (require, response) => {
   const { id } = require.params;
   const categories = readCategories();
