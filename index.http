@@ -26,3 +26,6 @@ content-type: application/json
 {
     "name":"item nemeggrh"
 } 
+
+### 
+GET http://localhost:3001/articles/37d935c0-fa20-4bed-afd3-d6b9d88898b5
