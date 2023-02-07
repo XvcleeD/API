@@ -98,8 +98,8 @@ app.get("users/update", (req, res) => {
 });
 
 app.post("/articles", (req, res) => {
-  const { title, categoryId, text } = req.body;
-  const newArticle = { id: uuid(), title, categoryId, text };
+  const { title, categoryId, text, backgaround } = req.body;
+  const newArticle = { id: uuid(), title, categoryId, text, backgaround };
 
   const articles = readArticles();
 
@@ -121,7 +121,7 @@ app.get("/articles/:id", (req, res) => {
   const category = categories.find(
     (category) => category.id === one.categoryId
   );
-  one.cateory = category;
+  one.category = category;
 
   // console.log(one.category);
   if (one) {
