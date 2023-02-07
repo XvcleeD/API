@@ -121,7 +121,7 @@ app.get("/articles/:id", (req, res) => {
   const category = categories.find(
     (category) => category.id === one.categoryId
   );
-  one.category = category;
+  one.cateory = category;
 
   console.log(one.category);
   if (one) {
