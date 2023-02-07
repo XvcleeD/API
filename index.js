@@ -123,7 +123,7 @@ app.get("/articles/:id", (req, res) => {
   );
   one.cateory = category;
 
-  console.log(one.category);
+  // console.log(one.category);
   if (one) {
     res.json(one);
   } else {
