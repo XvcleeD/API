@@ -111,6 +111,15 @@ app.post("/articles", (req, res) => {
 
 app.get("/articles", (req, res) => {
   const articles = readArticles();
+  console.log(articles.length);
+
+  const categories = readCategories();
+  for (let i = 0; i < articles.length; i++) {
+    const category = categories.find(
+      (category) => category.id === articles[i].categoryId
+    );
+    articles[i].category = category;
+  }
   res.json(articles);
 });
 app.get("/articles/:id", (req, res) => {
