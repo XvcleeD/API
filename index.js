@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const { v4: uuid } = require("uuid");
+const axios = require("axios");
 
 const port = 3001;
 const app = express();
@@ -73,29 +74,29 @@ app.put("/categories/:id", (req, res) => {
   }
 });
 
-app.get("/user/save", (req, res) => {
-  const newUser = [
-    {
-      name: "Naraa",
-      id: 1,
-    },
-  ];
-  fs.writeFileSync("data.json", JSON.stringify(newUser));
-  resizeBy.json(["success"]);
-});
+// app.get("/user/save", (req, res) => {
+//   const newUser = [
+//     {
+//       name: "Naraa",
+//       id: 1,
+//     },
+//   ];
+//   fs.writeFileSync("data.json", JSON.stringify(newUser));
+//   resizeBy.json(["success"]);
+// });
 
-app.get("user/read", (req, res) => {
-  const content = fs.readFileSync("data.json");
-  res.json(JSON.parse(content));
-});
+// app.get("user/read", (req, res) => {
+//   const content = fs.readFileSync("data.json");
+//   res.json(JSON.parse(content));
+// });
 
-app.get("users/update", (req, res) => {
-  const content = fs.readFileSync("data.json");
-  const users = JSON.parse(content);
-  users.push({ id: 2, name: "Bold" });
-  fs.writeFileSync("data.json", JSON, stringify(users));
-  res.json;
-});
+// app.get("users/update", (req, res) => {
+//   const content = fs.readFileSync("data.json");
+//   const users = JSON.parse(content);
+//   users.push({ id: 2, name: "Bold" });
+//   fs.writeFileSync("data.json", JSON, stringify(users));
+//   res.json;
+// });
 
 app.post("/articles", (req, res) => {
   const { title, categoryId, text, backgaround } = req.body;
@@ -111,7 +112,7 @@ app.post("/articles", (req, res) => {
 
 app.get("/articles", (req, res) => {
   const articles = readArticles();
-  console.log(articles.length);
+  // console.log(articles.length);
 
   const categories = readCategories();
   for (let i = 0; i < articles.length; i++) {
@@ -120,8 +121,40 @@ app.get("/articles", (req, res) => {
     );
     articles[i].category = category;
   }
-  res.json(articles);
+  const page = articles.slice(0, 10);
+  res.json(page);
 });
+
+app.get("/articles/insertSampleData", (req, res) => {
+  axios("https://dummyjson.com/posts?limit=100").then(({ data }) => {
+    const articles = readArticles();
+    data.posts.forEach((post) => {
+      const newArticle = {
+        id: uuid(),
+        title: post.title,
+        tags: post.tags,
+        text: post.body,
+      };
+      articles.unshift(newArticle);
+    });
+
+    fs.writeFileSync("articles.json", JSON.stringify(articles));
+
+    res.json(["success"]);
+  });
+});
+app.get("/articles/updateAllCategory", (req, res) => {
+  const articles = readArticles();
+  const categories = readCategories();
+  articles.forEach((article, index) => {
+    const categoryIndex = index % categories.length;
+    article.categoryId = categories[categoryIndex].id;
+  });
+
+  fs.writeFileSync("articles.json", JSON.stringify(articles));
+  res.json(["success"]);
+});
+
 app.get("/articles/:id", (req, res) => {
   const { id } = req.params;
   const articles = readArticles();
