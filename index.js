@@ -21,6 +21,16 @@ function readArticles() {
   const articles = JSON.parse(content);
   return articles;
 }
+function readArticlesNew() {
+  const content = fs.readFileSync("articlesNew.json");
+  const articles = JSON.parse(content);
+  return articles;
+}
+function readArticles() {
+  const content = fs.readFileSync("articles.json");
+  const articles = JSON.parse(content);
+  return articles;
+}
 
 app.get("/categories", (req, res) => {
   const categories = readCategories();
@@ -97,6 +107,26 @@ app.put("/categories/:id", (req, res) => {
 //   fs.writeFileSync("data.json", JSON, stringify(users));
 //   res.json;
 // });
+// app.get("/articles", (req, res) => {
+//   const articles = readArticles;
+//   res.json(articles);
+// });
+app.get("/articlesNew", (req, res) => {
+  const { q, page } = req.query;
+  const articles = readArticlesNew();
+  if (q) {
+    const filteredList = articles.filter((article) =>
+      article.title.toLowerCase().includes(q.toLowerCase())
+    );
+    res.json(filteredList);
+  } else {
+    const pagedList = articles.slice((page - 1) * 10, page * 10);
+    res.json({
+      list: pagedList,
+      count: articles.length,
+    });
+  }
+});
 
 app.post("/articles", (req, res) => {
   const { title, categoryId, text, backgaround } = req.body;
@@ -121,39 +151,39 @@ app.get("/articles", (req, res) => {
     );
     articles[i].category = category;
   }
-  const page = articles.slice(0, 10);
-  res.json(page);
+  // const page = articles.slice(0, 10);
+  res.json(articles);
 });
 
-app.get("/articles/insertSampleData", (req, res) => {
-  axios("https://dummyjson.com/posts?limit=100").then(({ data }) => {
-    const articles = readArticles();
-    data.posts.forEach((post) => {
-      const newArticle = {
-        id: uuid(),
-        title: post.title,
-        tags: post.tags,
-        text: post.body,
-      };
-      articles.unshift(newArticle);
-    });
+// app.get("/articlesNew/insertSampleData", (req, res) => {
+//   axios("https://dummyjson.com/posts?limit=100").then(({ data }) => {
+//     const articles = readArticlesNew();
+//     data.posts.forEach((post) => {
+//       const newArticle = {
+//         id: uuid(),
+//         title: post.title,
+//         tags: post.tags,
+//         text: post.body,
+//       };
+//       articles.unshift(newArticle);
+//     });
 
-    fs.writeFileSync("articles.json", JSON.stringify(articles));
+//     fs.writeFileSync("articles.json", JSON.stringify(articles));
 
-    res.json(["success"]);
-  });
-});
-app.get("/articles/updateAllCategory", (req, res) => {
-  const articles = readArticles();
-  const categories = readCategories();
-  articles.forEach((article, index) => {
-    const categoryIndex = index % categories.length;
-    article.categoryId = categories[categoryIndex].id;
-  });
+//     res.json(["success"]);
+//   });
+// });
+// app.get("/articlesNew/updateAllCategory", (req, res) => {
+//   const articles = readArticlesNew();
+//   const categories = readCategories();
+//   articles.forEach((article, index) => {
+//     const categoryIndex = index % categories.length;
+//     article.categoryId = categories[categoryIndex].id;
+//   });
 
-  fs.writeFileSync("articles.json", JSON.stringify(articles));
-  res.json(["success"]);
-});
+//   fs.writeFileSync("articles.json", JSON.stringify(articles));
+//   res.json(["success"]);
+// });
 
 app.get("/articles/:id", (req, res) => {
   const { id } = req.params;
