@@ -26,11 +26,6 @@ function readArticlesNew() {
   const articles = JSON.parse(content);
   return articles;
 }
-function readArticles() {
-  const content = fs.readFileSync("articles.json");
-  const articles = JSON.parse(content);
-  return articles;
-}
 
 app.get("/categories", (req, res) => {
   const categories = readCategories();
@@ -111,6 +106,14 @@ app.put("/categories/:id", (req, res) => {
 //   const articles = readArticles;
 //   res.json(articles);
 // });
+app.get("/articles/categoryId/:categoryId",(req, res) =>{
+  const {categoryId} = req.query;
+  const articles = readArticles();
+  cosnt filterCategory = articles.filter((article) => )
+
+
+})
+
 app.get("/articlesNew", (req, res) => {
   const { q, page } = req.query;
   const articles = readArticlesNew();
