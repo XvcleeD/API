@@ -3,6 +3,12 @@ const cors = require("cors");
 const fs = require("fs");
 const { v4: uuid } = require("uuid");
 const axios = require("axios");
+const user = {
+  username: "Horolmaa",
+  password: "balgan",
+};
+
+let userTokens = [];
 
 const port = 3001;
 const app = express();
@@ -26,10 +32,29 @@ function readArticlesNew() {
   const articles = JSON.parse(content);
   return articles;
 }
+app.get("/login", (req, res) => {
+  const { username, password } = req.query;
+
+  if (user.username === username && user.password === password) {
+    const token = uuid();
+    userTokens.push(token);
+    res.json({ token });
+  } else {
+    res.sendStatus(401);
+  }
+});
 
 app.get("/categories", (req, res) => {
+  const { q } = req.query;
   const categories = readCategories();
-  res.json(categories);
+  if (q) {
+    const filteredList = categories.filter((category) =>
+      category.name.toLowerCase().includes(q.toLowerCase())
+    );
+    res.json(filteredList);
+  } else {
+    res.json(categories);
+  }
 });
 
 app.get("/categories/:id", (req, res) => {
@@ -106,13 +131,35 @@ app.put("/categories/:id", (req, res) => {
 //   const articles = readArticles;
 //   res.json(articles);
 // });
-app.get("/articles/categoryId/:categoryId",(req, res) =>{
-  const {categoryId} = req.query;
+app.get("/article", (req, res) => {
+  const { q, categoryId } = req.query;
   const articles = readArticles();
-  cosnt filterCategory = articles.filter((article) => )
+  let finalResult = articles;
 
+  if (categoryId) {
+    finalResult = articles.filter(
+      (articles) => article.categoryId === categoryId
+    );
+  }
+  if (q) {
+    finalResult = finalResult.filter((article) =>
+      article.title.toLowerCase().includes(q.toLowerCase())
+    );
+  }
+  const categories = readCategories();
 
-})
+  pagedList.forEach((oneArticle) => {
+    const category = categories.find(
+      (category) => category.id === oneArticle.categoryId
+    );
+    oneArticle.category = category;
+  });
+
+  res.json({
+    list: pagedList,
+    count: finalResult.length,
+  });
+});
 
 app.get("/articlesNew", (req, res) => {
   const { q, page } = req.query;
