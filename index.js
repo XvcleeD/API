@@ -131,14 +131,14 @@ app.put("/categories/:id", (req, res) => {
 //   const articles = readArticles;
 //   res.json(articles);
 // });
-app.get("/article", (req, res) => {
-  const { q, categoryId } = req.query;
+app.get("/articles/33a398f5-7650-4cfe-872e-242e6d97166e", (req, res) => {
+  const { q, page, categoryId } = req.query;
   const articles = readArticles();
   let finalResult = articles;
 
   if (categoryId) {
     finalResult = articles.filter(
-      (articles) => article.categoryId === categoryId
+      (articles) => articles.categoryId === categoryId
     );
   }
   if (q) {
@@ -147,6 +147,7 @@ app.get("/article", (req, res) => {
     );
   }
   const categories = readCategories();
+  const pagedList = finalResult.slice((page - 1) * 10, page * 10);
 
   pagedList.forEach((oneArticle) => {
     const category = categories.find(
@@ -155,28 +156,29 @@ app.get("/article", (req, res) => {
     oneArticle.category = category;
   });
 
+  console.log(pagedList);
   res.json({
     list: pagedList,
     count: finalResult.length,
   });
 });
 
-app.get("/articlesNew", (req, res) => {
-  const { q, page } = req.query;
-  const articles = readArticlesNew();
-  if (q) {
-    const filteredList = articles.filter((article) =>
-      article.title.toLowerCase().includes(q.toLowerCase())
-    );
-    res.json(filteredList);
-  } else {
-    const pagedList = articles.slice((page - 1) * 10, page * 10);
-    res.json({
-      list: pagedList,
-      count: articles.length,
-    });
-  }
-});
+// app.get("/articlesNew", (req, res) => {
+//   const { q, page } = req.query;
+//   const articles = readArticlesNew();
+//   if (q) {
+//     const filteredList = articles.filter((article) =>
+//       article.title.toLowerCase().includes(q.toLowerCase())
+//     );
+//     res.json(filteredList);
+//   } else {
+//     const pagedList = articles.slice((page - 1) * 10, page * 10);
+//     res.json({
+//       list: pagedList,
+//       count: articles.length,
+//     });
+//   }
+// });
 
 app.post("/articles", (req, res) => {
   const { title, categoryId, text, backgaround } = req.body;
@@ -201,8 +203,10 @@ app.get("/articles", (req, res) => {
     );
     articles[i].category = category;
   }
-  // const page = articles.slice(0, 10);
+
   res.json(articles);
+
+  // const page = articles.slice(0, 10);
 });
 
 // app.get("/articlesNew/insertSampleData", (req, res) => {
@@ -235,23 +239,23 @@ app.get("/articles", (req, res) => {
 //   res.json(["success"]);
 // });
 
-app.get("/articles/:id", (req, res) => {
-  const { id } = req.params;
-  const articles = readArticles();
-  const one = articles.find((item) => item.id === id);
-  const categories = readCategories();
-  const category = categories.find(
-    (category) => category.id === one.categoryId
-  );
-  one.category = category;
+// app.get("/articles/:id", (req, res) => {
+//   const { id } = req.params;
+//   const articles = readArticles();
+//   const one = articles.find((item) => item.id === id);
+//   const categories = readCategories();
+//   const category = categories.find(
+//     (category) => category.id === one.categoryId
+//   );
+//   one.category = category;
 
-  // console.log(one.category);
-  if (one) {
-    res.json(one);
-  } else {
-    res.sendStatus(404);
-  }
-});
+//   // console.log(one.category);
+//   if (one) {
+//     res.json(one);
+//   } else {
+//     res.sendStatus(404);
+//   }
+// });
 
 app.listen(port, () => {
   console.log("App is listering at port", port);
