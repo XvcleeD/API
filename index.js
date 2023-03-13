@@ -3,12 +3,19 @@ const cors = require("cors");
 const fs = require("fs");
 const { v4: uuid } = require("uuid");
 const axios = require("axios");
+const mysql = require("mysql2");
 const user = {
   username: "Horolmaa",
   password: "balgan",
 };
 
 let userTokens = [];
+
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  database: "evening",
+});
 
 const port = 3001;
 const app = express();
@@ -27,11 +34,11 @@ function readArticles() {
   const articles = JSON.parse(content);
   return articles;
 }
-function readArticlesNew() {
-  const content = fs.readFileSync("articlesNew.json");
-  const articles = JSON.parse(content);
-  return articles;
-}
+// function readArticlesNew() {
+//   const content = fs.readFileSync("articlesNew.json");
+//   const articles = JSON.parse(content);
+//   return articles;
+// }
 app.get("/login", (req, res) => {
   const { username, password } = req.query;
 
@@ -42,6 +49,16 @@ app.get("/login", (req, res) => {
   } else {
     res.sendStatus(401);
   }
+});
+
+app.get("/mysql-test", (req, res) => {
+  const limit = 10;
+  connection.query(
+    `SELECT * FROM titles limit ${limit}`,
+    function (err, results, fields) {
+      res.json(results);
+    }
+  );
 });
 
 app.get("/categories", (req, res) => {
