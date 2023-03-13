@@ -260,3 +260,6 @@ app.get("/articles", (req, res) => {
 app.listen(port, () => {
   console.log("App is listering at port", port);
 });
+
+
+// mongodb+srv://Xvclee2551:<password>@cluster0.zso2y9y.mongodb.net/test
