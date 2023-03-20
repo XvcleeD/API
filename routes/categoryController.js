@@ -2,16 +2,34 @@ const express = require("express");
 const { v4: uuid } = require("uuid");
 const { connection } = require("../config/mysql");
 const router = express.Router();
+const mongoose = require("mongoose");
 
+const categorySvhema = new mongoose.Schema({
+  _id: String,
+  name: String,
+});
 
-router.get("/", (req, res) => {
+const Category = mongoose.model("Category", categorySvhema);
+
+router.get("/", async (req, res) => {
+  const { q } = req.query;
+
   connection.query(
-    `SELECT * FROM category order by name`,
+    `SELECT * FROM category where name like ? order by name`,
+    [`%${q}%`],
     function (err, results, fields) {
       res.json(results);
     }
   );
 });
+// router.get("/", (req, res) => {
+//   connection.query(
+//     `SELECT * FROM category order by name`,
+//     function (err, results, fields) {
+//       res.json(results);
+//     }
+//   );
+// });
 router.get("/:id", (req, res) => {
   const { q } = req.query;
   connection.query(
@@ -23,15 +41,13 @@ router.get("/:id", (req, res) => {
   );
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { name } = req.body;
-  connection.query(
-    `insert into category values(?, ?)`,
-    [uuid(), name],
-    function (err, results, fields) {
-      res.sendStatus(201);
-    }
-  );
+  await Category.create({
+    _id: uuid(),
+    name: name,
+  });
+  res.sendStatus(201);
 });
 
 router.delete("/:id", (req, res) => {
