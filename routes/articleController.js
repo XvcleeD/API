@@ -21,6 +21,7 @@ const Article = mongoose.model("Article", articleSchema);
 router.get("/", async (req, res) => {
   const list = await Article.find({}).populate("categoryId");
 
+  console.log(list);
   //   console.log(list);
   res.json({
     list: list,
