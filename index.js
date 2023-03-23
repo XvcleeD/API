@@ -18,7 +18,7 @@ cloudinary.config({
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "/tmp/");
+    cb(null, "/tmp");
   },
   filename: function (req, file, cb) {
     const extentsions = file.originalname.split(".").pop();
@@ -54,8 +54,8 @@ app.post(
     const cloudinaryImage = await cloudinary.v2.uploader.upload(req.file.path);
     return res.json({
       path: cloudinaryImage.secure_url,
-        width: cloudinaryImage.width,
-        height: cloudinaryImage.height,
+      width: cloudinaryImage.width,
+      height: cloudinaryImage.height,
     });
   }
 );
