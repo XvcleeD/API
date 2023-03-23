@@ -7,7 +7,6 @@ const fs = require("fs");
 const { v4: uuid } = require("uuid");
 const mongoose = require("mongoose");
 const multer = require("multer");
-const { config } = require("process");
 const cloudinary = require("cloudinary");
 require("dotenv").config();
 
