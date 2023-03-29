@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const categorySvhema = new mongoose.Schema({
   _id: String,
   name: String,
+  count: { type: Number, default: 0 },
 });
 
 const Category = mongoose.model("Category", categorySvhema);
@@ -14,19 +15,13 @@ const Category = mongoose.model("Category", categorySvhema);
 router.get("/", async (req, res) => {
   const token = req.headers.authorization;
 
-  jwt.verify(token, "CI6IkpXVCJ9", async function (err, decoded) {
-    if (err) {
-      res.sendStatus(401);
-    } else {
-      var decoded = jwt.verify(token, "CI6IkpXVCJ9");
-      // console.log(decoded);
-      const { q } = req.query;
-      const qregex = new RegExp(`${q}`, "i");
-      const list = await Category.find({ name: qregex }, "", {
-        sort: { name: 1 },
-      });
-      res.json(list);
-    }
+  jwt.verify(token, process.env.JWT_SECRET, async function (err, decoded) {
+    const { q } = req.query;
+    const qregex = new RegExp(`${q}`, "i");
+    const list = await Category.find({ name: qregex }, "", {
+      sort: { name: 1 },
+    });
+    res.json(list);
   });
 });
 router.get("/:id", async (req, res) => {
@@ -62,4 +57,5 @@ router.put("/:id", (req, res) => {
 });
 module.exports = {
   categoryRouter: router,
+  Category: Category,
 };

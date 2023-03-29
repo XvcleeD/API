@@ -10,6 +10,7 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 const cloudinary = require("cloudinary");
 require("dotenv").config();
+const { checkAuth } = require("./middlewares/checAuth");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -40,6 +41,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
+app.use("/categories", checkAuth, categoryRouter);
+app.use("/articles", checkAuth, articleRouter);
 app.use("/users", userRouter);
 app.post(
   "/upload-image",

@@ -2,6 +2,7 @@ const express = require("express");
 const { v4: uuid } = require("uuid");
 const router = express.Router();
 const mongoose = require("mongoose");
+const { Category } = require("./categoryController");
 
 const articleSchema = new mongoose.Schema({
   _id: { type: String, default: () => uuid() },
@@ -19,7 +20,7 @@ const Article = mongoose.model("Article", articleSchema);
 
 router.get("/", async (req, res) => {
   const list = await Article.find({}).populate("categoryId");
-    // console.log(list);
+  // console.log(list);
   res.json({
     list: list,
     // count: 10,
@@ -34,13 +35,30 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const { title, content, categoryId, image } = req.body;
-  await Article.create({
-    id: uuid(),
-    title,
-    content,
-    categoryId,
-    image,
-  });
+  const session = await mongoose.startSession();
+
+  try {
+    await session.withTransaction(async () => {
+      await Article.create(
+        {
+          title,
+          content,
+          categoryId,
+          image,
+        },
+        { session }
+      );
+      const category = await Category.findById(categoryId);
+      await Category.updateOne(
+        { _id: categoryId },
+        { count: category.count + 1 },
+        { session }
+      );
+    });
+    session.endSession();
+  } catch (e) {
+    console.log(e);
+  }
   res.sendStatus(201);
 });
 
